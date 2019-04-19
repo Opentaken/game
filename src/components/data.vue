@@ -142,12 +142,12 @@ export default {
               normal : {
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1,
                   [
-                    {offset: 0, color: '#b6d6fa'},
+                    {offset: 0, color: '#0975ef'},
                     {offset: 0.5, color: '#d7fdfb'},
                     {offset: 1, color: '#fff'}
                   ]), //改变折线点的颜色
                 lineStyle:{
-                  color:'#00c6e8'
+                  color:'#0975ef'
                 },
                 borderColor: '#007fed'
               }
@@ -194,7 +194,8 @@ export default {
               },
               itemStyle:{
                 color:'#d06ece'
-              }
+              },
+              borderColor: '#d06ece'
             }
           },
           areaStyle: {},
