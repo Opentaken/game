@@ -19,11 +19,12 @@
         {{form.pq}}
       </el-form-item>
       <el-form-item label="">
-        <el-button>手动爬取</el-button>
+        <el-button>一键爬取</el-button>
+        <el-button @click="openDialog()">网站爬取</el-button>
       </el-form-item>
     </el-form>
 
-    <el-dialog title="选择网站爬取" :visible.sync="isShow"  width="446px">
+    <!--<el-dialog title="选择网站爬取" :visible.sync="isShow"  width="446px">
       <el-form label-width="130px" size="mini" class="source-list">
         <el-col :span="12">
           <el-checkbox >游研社</el-checkbox>
@@ -35,7 +36,54 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="crawling()" type="primary">确定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog>-->
+
+    <div class="dialog" v-if="isShow">
+      <div class="dialog-bg" @click="closeDialog()"></div>
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <h2>选择网站爬取</h2>
+          <button class="close-btn" @click="closeDialog()"></button>
+        </div>
+        <div class="dialog-body">
+          <el-form label-width="130px" size="mini" class="source-list">
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">游研社</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">GameRes游资网</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">GameLook</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">奶牛关</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">触乐</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">游戏时光</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">网易爱玩</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">游戏葡萄</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">机核</el-checkbox>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox class="set-in-checkbox">旅法师营地</el-checkbox>
+            </el-col>
+          </el-form>
+        </div>
+        <div class="dialog-footer">
+          <el-button @click="closeDialog()" type="primary">确定</el-button>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -55,8 +103,11 @@ export default {
   mounted() {
   },
   methods: {
-    crawling:function(){
-
+    openDialog:function(){
+      this.isShow = true;
+    },
+    closeDialog(){
+      this.isShow = false;
     }
   }
 }
@@ -64,6 +115,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 .viewTitle{
   text-align: left;
   font-size: 16px;
@@ -126,5 +178,72 @@ export default {
   text-align: left;
   font-size: 14px;
   color: #666;
+}
+/*彈窗*/
+.dialog-bg{
+  background: #000;
+  opacity: 0.6;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.dialog-content{
+  width: 445px;
+  background: #fff;
+  border-radius: 5px;
+  position: absolute;
+  top:50%;
+  margin: -166px 0 0 -222px;
+  left: 50%;
+}
+.dialog-header{
+  height: 42px;
+  border-bottom: solid 1px #ecf2fa;
+  padding: 0 18px;
+  position: relative;
+}
+.dialog-header h2{
+  font-size: 14px;
+  color: #666;
+  line-height: 41px;
+  text-align: left;
+}
+.dialog-header .close-btn{
+  width: 30px;
+  height: 30px;
+  background: url("../assets/images/close-btn.png") no-repeat center;
+  border: 0;
+  cursor: pointer;
+  position: absolute;
+  right: 9px;
+  top: 6px;
+}
+.dialog-body{
+  padding: 20px 25px;
+  overflow: hidden;
+  font-size: 14px;
+  color: #666;
+}
+.set-in-checkbox{
+  margin: 8px 0;
+}
+/deep/.set-in-checkbox .el-checkbox__inner::after{
+        border-color: #4d85d8;
+      }
+/deep/.set-in-checkbox .el-checkbox__input.is-checked .el-checkbox__inner{
+        background-color: #fff;
+      }
+/deep/.set-in-checkbox .el-checkbox__input.is-checked+.el-checkbox__label{
+        color: #666;
+      }
+
+.dialog-footer{
+  padding: 6px 0 22px;
+}
+.dialog-footer .el-button{
+  width: auto;
+  padding: 0 20px;
 }
 </style>

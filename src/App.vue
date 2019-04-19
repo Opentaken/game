@@ -81,7 +81,7 @@ html,body,.el-container,.el-main{
   height: 100%;
 }
 .main-content{
-  min-width: 1800px;
+  min-width: 1280px;
   overflow: auto;
 }
 .el-header{

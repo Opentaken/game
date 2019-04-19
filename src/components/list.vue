@@ -8,7 +8,7 @@
 
     <el-row v-loading="loading">
       <div class="list-content">
-        <el-row style="margin-bottom:30px;" class="top">
+        <el-row style="margin-bottom:20px;" class="top">
           <el-col>
             <el-input v-model="param.content" placeholder="请输入文章内容"></el-input>
             <el-input v-model="param.type" placeholder="请输入文章分类"></el-input>
@@ -190,6 +190,7 @@ export default {
   text-align: left;
   float: left;
   margin-right: 10px;
+  margin-bottom: 10px;
 }
 /deep/.el-input .el-input__inner{
   width: 200px;

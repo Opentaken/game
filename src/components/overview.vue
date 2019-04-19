@@ -493,14 +493,14 @@ export default {
   color: #666;
 }
 .overviewList{
-  width: calc(50% - 30px);
+  width: calc((100% - 20px) / 2);
   margin-right: 20px;
   margin-bottom: 30px;
   float: left;
   background: #fff;
   border-radius: 5px;
 }
-.overviewList:nth-child(5n) {
+.overviewList:nth-child(2n) {
   margin-right: 0;
 }
 .overviewList strong{
