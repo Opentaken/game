@@ -17,9 +17,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.prototype.$echarts = echarts
 
-console.log(filters.default)
 Object.keys(filters.default).forEach(key => {
-  console.log('key', key)
   Vue.filter(key, filters.default[key])
 })
 /* eslint-disable no-new */

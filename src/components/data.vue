@@ -9,7 +9,7 @@
       <ul class="data_ul">
         <li>
           <div class="num">
-            <p>218</p>
+            <p>{{topCount.rate.total}}</p>
             <span>总数量</span>
           </div>
           <div class="data_bl">
@@ -18,14 +18,14 @@
               <span>周同比</span>
             </div>
             <div class="tab-body">
-              <span class="down_1">100%</span>
-              <span class="up_1">100%</span>
+              <span :class="topCount.rate.dayUpOrDown == '1' ? 'up_1' : topCount.rate.dayUpOrDown == '0' ? 'down_1' : ''">{{topCount.rate.dayPercent}}</span>
+              <span :class="topCount.rate.weekUpOrDown == '1' ? 'up_1' : topCount.rate.weekUpOrDown == '0' ? 'down_1' : ''">{{topCount.rate.weekPercent}}</span>
             </div>
           </div>
         </li>
         <li>
           <div class="num">
-            <p>218</p>
+            <p>{{topCount.dayCount.dayChangCount}}</p>
             <span>日数量变化</span>
           </div>
 
@@ -35,7 +35,7 @@
         </li>
         <li>
           <div class="num">
-            <p>218</p>
+            <p>{{topCount.weekCount.weekChangCount}}</p>
             <span>周数量变化</span>
           </div>
           <div class="data_bl">
@@ -55,7 +55,7 @@
             </div>
           </el-col>
         </el-row>
-        <div class="bb">
+        <div class="bb" v-loading="loading">
           <div id="myChart" :style="{width: '100%', height: '600px'}"  v-if="type == 'game'"></div>
           <div id="myChart3" :style="{width: '100%', height: '600px'}" v-if="type == 'tag'"></div>
         </div>
@@ -71,16 +71,7 @@
           <h4>变化量排行</h4>
           <p><span>排名</span><span>游戏名称</span><span>总数</span><span>变化百分百</span><span>变化量</span></p>
           <ul class="tj">
-            <li><span><img src="../assets/images/first.png"></span><span>王者荣耀</span><span>9875</span><span>+10%</span><span class="up">9875</span></li>
-            <li><span><img src="../assets/images/second.png"></span><span>魔兽世界</span><span>9875</span><span>+10%</span><span class="up">9553</span></li>
-            <li><span><img src="../assets/images/thirdly.png"></span><span>无限法则</span><span>9875</span><span>+10%</span><span class="up">8530</span></li>
-            <li><span>4</span><span>英雄联盟</span><span>9875</span><span>-10%</span><span class="down">8121</span></li>
-            <li><span>5</span><span>猎鹰时代</span><span>9875</span><span>-10%</span><span class="down">7852</span></li>
-            <li><span>6</span><span>一拳超人</span><span>9875</span><span>+10%</span><span class="up">6842</span></li>
-            <li><span>7</span><span>刺客信条</span><span>9875</span><span>-10%</span><span class="down">5432</span></li>
-            <li><span>8</span><span>绝地求生</span><span>9875</span><span>+10%</span><span class="up">4001</span></li>
-            <li><span>9</span><span>全境封锁</span><span>9875</span><span>-10%</span><span class="down">2536</span></li>
-            <li><span>10</span><span>孤岛惊魂</span><span>9875</span><span>-10%</span><span class="down">1358</span></li>
+            <li v-for="(item, index) in rightGame" :key="index"><span :class="index == '0' ? 'one' : index == '1' ? 'two' : index == '2' ? 'three' : ''">{{index+1}}</span><span>{{item.gameName}}</span><span>{{item.total}}</span><span>{{item.changePercent}}</span><span :class="item.changeCount > 0 ? 'up' : 'down'">{{Math.abs(item.changeCount)}}</span></li>
           </ul>
         </div>
       </div>
@@ -93,15 +84,51 @@
 <script>
 
 import echarts from 'echarts'
+import qs from 'qs'
 export default {
   name: 'HelloWorld',
   data () {
     return {
-      type:'game'
+      type:'game',
+      gameCount: {
+        gameName: [],
+        total: []
+      },
+      rightGame: [],
+      topCount: {
+        rate: {
+          dayPercent: '',
+          dayUpOrDown: '',
+          total: '',
+          weekPercent: '',
+          weekUpOrDown: ''
+        },
+        dayCount: {
+          changList: [],
+          dayChangCount: ''
+        },
+        weekCount: {
+          changList: [],
+          weekChangCount: ''
+        }
+      },
+      dayStatistics:{
+        date: [],
+        total: []
+      },
+      weekStatistics:{
+        date: [],
+        total: []
+      },
+      loading: false, // 数量统计图loading状态
+      loading_article: false, // 上方统计图loading状态
+      loading_game: false, // 游戏变化量loading状态
     }
   },
   mounted() {
-    this.drawLine();
+    this.gameCounts();
+    this.articleChangRank();
+    this.changeRank();
   },
   methods: {
     drawLine(){
@@ -118,7 +145,7 @@ export default {
             type: 'category',
             boundaryGap: false,
             show : false,
-            data: ['2018-01-01','2018-01-01','2018-01-01','2018-01-01','2018-01-01','2018-01-01','2018-01-01']
+            data: this.dayStatistics.date
           },
           yAxis: {
             show : false,
@@ -153,7 +180,7 @@ export default {
               }
             },
             areaStyle: {},
-            data: [80, 20, 30, 40, 30, 50, 10]
+            data: this.dayStatistics.total
           }]
         });
         myChart2.setOption({
@@ -162,7 +189,7 @@ export default {
           type: 'category',
           boundaryGap: false,
           show : false,
-          data: ['2018-01-01','2018-01-01','2018-01-01','2018-01-01','2018-01-01','2018-01-01','2018-01-01']
+          data: this.weekStatistics.date
         },
         yAxis: {
           show : false,
@@ -199,11 +226,11 @@ export default {
             }
           },
           areaStyle: {},
-          data: [10, 4000, 30, 40, 8500, 50, 10]
+          data: this.weekStatistics.total
         }]
       });
-        // 绘制图表
-        this.drawGame();
+        // // 绘制图表
+        // this.drawGame();
     },
     drawGame(){
       let myChart = this.$echarts.init(document.getElementById('myChart'))
@@ -225,7 +252,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ["王者荣耀","英雄联盟","鬼泣7","帝国","魔兽","data2","口袋妖怪复刻","火焰纹章","指环王","小叮当","忍者神龟3","神秘海域","群星","刺客信条：启示录","荒野大镖客2","王国风云","猎鹰时代","只狼", '绝地求生', '救赎'],
+          data: this.gameCount.gameName,
           axisLabel: {
             interval: 0,    //强制文字产生间隔
             rotate: 45,     //文字逆时针旋转45°
@@ -253,10 +280,9 @@ export default {
                 ])
             }
           },
-            name: '数量',
             type: 'bar',
             barWidth : 20,//柱图宽度
-            data: [52, 44, 36, 90, 102, 30, 22, 36, 13, 30, 20, 20, 36, 10, 10, 20, 36, 10, 10, 20]
+            data: this.gameCount.total
           }]
       });
     },
@@ -324,7 +350,46 @@ export default {
           this.drawGame()
         }
       })
-
+    },
+    gameCounts(){
+      this.loading = true
+      this.axios.post('api/statistic/gameCount').then(res => {
+        this.loading = false
+        if(res.data.code == '200') {
+          res.data.data.forEach(item => {
+            this.gameCount.gameName.push(item.gameName);
+            this.gameCount.total.push(item.total);
+            this.drawGame();
+          });
+        }
+      })
+    },
+    articleChangRank(){
+      this.loading_article = true
+      this.axios.post('api/statistic/articleChangRank').then(res => {
+        this.loading_article = false
+        if(res.data.code == '200') {
+          this.topCount = res.data.data
+          this.topCount.dayCount.changList.forEach(item => {
+            this.dayStatistics.date.push(this.$options.filters.dateFtt(item.date))
+            this.dayStatistics.total.push(item.count)
+          })
+          this.topCount.weekCount.changList.forEach(item => {
+            this.weekStatistics.date.push(this.$options.filters.dateFtt(item.startTime))
+            this.weekStatistics.total.push(item.count)
+          })
+          this.drawLine()
+        }
+      })
+    },
+    changeRank(){
+      this.loading_game = true
+      this.axios.post('api/statistic/changeRank').then(res => {
+        this.loading_game = false
+        if(res.data.code == '200') {
+          this.rightGame = res.data.data
+        }
+      })
     }
   }
 }
@@ -336,6 +401,7 @@ export default {
   background: #edf4f7;
   padding: 30px;
   overflow: hidden;
+  min-width: 1400px;
 }
 /*.data>div:nth-child(1){
   width: 100%;
@@ -515,8 +581,17 @@ export default {
   font-size: 14px;
   color: #666;
 }
-.tj span.down{
-
+.tj span.one{
+  background: url('../assets/images/first.png') no-repeat center;
+  font-size: 0;
+}
+.tj span.two{
+  background: url('../assets/images/second.png') no-repeat center;
+  font-size: 0;
+}
+.tj span.three{
+  background: url('../assets/images/thirdly.png') no-repeat center;
+  font-size: 0;
 }
 .tj span.down:after{
   display: inline-block;
@@ -529,9 +604,6 @@ export default {
   position: relative;
   top: -2px;
   left: 5px;
-}
-.tj span.up{
-
 }
 .tj span.up:after{
   display: inline-block;
