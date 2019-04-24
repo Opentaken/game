@@ -71,7 +71,7 @@
           <h4>变化量排行</h4>
           <p><span>排名</span><span>游戏名称</span><span>总数</span><span>变化百分百</span><span>变化量</span></p>
           <ul class="tj">
-            <li v-for="(item, index) in rightGame" :key="index"><span :class="index == '0' ? 'one' : index == '1' ? 'two' : index == '2' ? 'three' : ''">{{index+1}}</span><span>{{item.gameName}}</span><span>{{item.total}}</span><span>{{item.changePercent}}</span><span :class="item.changeCount > 0 ? 'up' : 'down'">{{Math.abs(item.changeCount)}}</span></li>
+            <li v-for="(item, index) in rightGame" :key="index"><span :class="index == '0' ? 'one' : index == '1' ? 'two' : index == '2' ? 'three' : ''">{{index+1}}</span><span>{{item.gameName}}</span><span>{{item.total}}</span><span>{{item.changePercent}}</span><span :class="item.changeCount > 0 ? 'up' : item.changeCount != 0 ? 'down' : ''">{{Math.abs(item.changeCount)}}</span></li>
           </ul>
         </div>
       </div>
