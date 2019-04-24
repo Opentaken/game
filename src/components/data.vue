@@ -7,7 +7,7 @@
     </el-row>
     <div>
       <ul class="data_ul">
-        <li>
+        <li v-loading="loading_article">
           <div class="num">
             <p>{{topCount.rate.total}}</p>
             <span>总数量</span>
@@ -23,7 +23,7 @@
             </div>
           </div>
         </li>
-        <li>
+        <li v-loading="loading_article">
           <div class="num">
             <p>{{topCount.dayCount.dayChangCount}}</p>
             <span>日数量变化</span>
@@ -33,7 +33,7 @@
             <div id="myChart1" :style="{width: '100%', height: '148px',top: '30px'}"></div>
           </div>
         </li>
-        <li>
+        <li v-loading="loading_article">
           <div class="num">
             <p>{{topCount.weekCount.weekChangCount}}</p>
             <span>周数量变化</span>
@@ -49,7 +49,7 @@
         <el-row style="margin-bottom:20px;" class="top">
           <el-col>
             <p class="viewTitle">游戏数量统计图</p>
-            <div class="cartogram-tab" v-if="false">
+            <div class="cartogram-tab">
               <button @click="drawCartogram('game')">热门游戏</button>
               <button @click="drawCartogram('tag')">热门话题</button>
             </div>
@@ -70,7 +70,7 @@
         <div class="rank_box">
           <h4>变化量排行</h4>
           <p><span>排名</span><span>游戏名称</span><span>总数</span><span>变化百分百</span><span>变化量</span></p>
-          <ul class="tj">
+          <ul class="tj" v-loading="loading_game">
             <li v-for="(item, index) in rightGame" :key="index"><span :class="index == '0' ? 'one' : index == '1' ? 'two' : index == '2' ? 'three' : ''">{{index+1}}</span><span>{{item.gameName}}</span><span>{{item.total}}</span><span>{{item.changePercent}}</span><span :class="item.changeCount > 0 ? 'up' : 'down'">{{Math.abs(item.changeCount)}}</span></li>
           </ul>
         </div>
@@ -90,33 +90,37 @@ export default {
   data () {
     return {
       type:'game',
-      gameCount: {
+      gameCount: { // 数量统计图数据
         gameName: [],
         total: []
       },
-      rightGame: [],
-      topCount: {
-        rate: {
+      tagCount: { // 数量统计图数据
+        tagName: [],
+        total: []
+      },
+      rightGame: [], // 右侧游戏变化排行榜
+      topCount: { // 上方统计图数据
+        rate: { // 总数
           dayPercent: '',
           dayUpOrDown: '',
           total: '',
           weekPercent: '',
           weekUpOrDown: ''
         },
-        dayCount: {
+        dayCount: { // 日变化量
           changList: [],
           dayChangCount: ''
         },
-        weekCount: {
+        weekCount: { // 周变化量
           changList: [],
           weekChangCount: ''
         }
       },
-      dayStatistics:{
+      dayStatistics:{ // 日变化量统计图数据
         date: [],
         total: []
       },
-      weekStatistics:{
+      weekStatistics:{ // 周变化量统计图数据
         date: [],
         total: []
       },
@@ -306,7 +310,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ["口袋妖怪复刻","火焰纹章","指环王","小叮当","忍者神龟3","神秘海域","群星","刺客信条：启示录","荒野大镖客2","王国风云","猎鹰时代","只狼", '绝地求生', '救赎'],
+          data: this.tagCount.tagName,
           axisLabel: {
             interval: 0,    //强制文字产生间隔
             rotate: 45,     //文字逆时针旋转45°
@@ -334,10 +338,9 @@ export default {
                 ])
             }
           },
-            name: '数量',
             type: 'bar',
             barWidth : 20,//柱图宽度
-            data: [ 22, 36, 13, 30, 20, 20, 36, 10, 10, 20, 36, 10, 10, 20]
+            data: this.tagCount.total
           }]
       });
     },
@@ -345,14 +348,18 @@ export default {
       this.type = type;
       setTimeout(res => {
         if(type == 'tag'){
-          this.drawTag()
+          this.articleTypeCount()
         }else {
-          this.drawGame()
+          this.gameCounts()
         }
       })
     },
     gameCounts(){
       this.loading = true
+      this.gameCount = {
+        gameName: [],
+        total: []
+      }
       this.axios.post('api/statistic/gameCount').then(res => {
         this.loading = false
         if(res.data.code == '200') {
@@ -388,6 +395,20 @@ export default {
         this.loading_game = false
         if(res.data.code == '200') {
           this.rightGame = res.data.data
+        }
+      })
+    },
+    articleTypeCount() {
+      this.loading = true
+      this.axios.post('api/statistic/articleTypeCount').then(res => {
+        this.loading = false
+        if(res.data.code == '200') {
+          console.log(res.data.data)
+          res.data.data[0].typeList.forEach(item => {
+            this.tagCount.tagName.push(item.type);
+            this.tagCount.total.push(item.typeCount);
+            this.drawTag();
+          });
         }
       })
     }
