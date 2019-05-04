@@ -558,7 +558,7 @@ export default {
   width: 100%;
 }
 .overview-list-content{
-  width: calc(100% - 186px);
+  width: calc(100% - 190px);
   display: inline-block;
   vertical-align: middle;
 }

@@ -56,8 +56,12 @@
           </el-col>
         </el-row>
         <div class="bb" v-loading="loading">
-          <div id="myChart" :style="{width: '100%', height: '600px'}"  v-if="type == 'game'"></div>
-          <div id="myChart3" :style="{width: '100%', height: '600px'}" v-if="type == 'tag'"></div>
+          <el-scrollbar v-if="type == 'game'">
+            <div id="myChart" :style="{width: '4500px', height: '600px'}"></div>
+          </el-scrollbar>
+          <el-scrollbar v-if="type == 'tag'">
+            <div id="myChart3" :style="{width: '4500px', height: '600px'}"></div>
+          </el-scrollbar>
         </div>
       </div>
 
@@ -252,6 +256,7 @@ export default {
         tooltip: {},
         grid: { // 控制图的大小，调整下面这些值就可以，
           x: 100,//控制x轴文字与底部的距离
+          x2: 50,
           y2: 100 // y2可以控制倾斜的文字狱最右边的距离，放置倾斜的文字超过显示区域
         },
         xAxis: {
@@ -306,6 +311,7 @@ export default {
         tooltip: {},
         grid: { // 控制图的大小，调整下面这些值就可以，
           x: 100,//控制x轴文字与底部的距离
+          x2: 50,
           y2: 100 // y2可以控制倾斜的文字狱最右边的距离，放置倾斜的文字超过显示区域
         },
         xAxis: {

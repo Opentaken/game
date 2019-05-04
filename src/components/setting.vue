@@ -125,7 +125,7 @@ export default {
           this.checkList = []
           this.$message({
             message: res.data.message,
-            type: 'success'
+            type: 'error'
           });
         }
       })
