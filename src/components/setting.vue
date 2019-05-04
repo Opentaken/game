@@ -12,15 +12,15 @@
       </el-form-item>
       <el-form-item>
         <label class="icon icon-clock">上次爬取时间：</label>
-        {{form.time2}}
+        {{loadData.reptileTime | dateformat}}
       </el-form-item>
       <el-form-item>
         <label class="icon icon-sand-clock">爬取状态：</label>
-        {{form.pq}}
+        {{loadData.reptileCount == loadData.finishCount ? '爬取完毕' : '爬取中'}}
       </el-form-item>
       <el-form-item label="">
-        <el-button>一键爬取</el-button>
-        <el-button @click="openDialog()">网站爬取</el-button>
+        <el-button @click="submit">一键爬取</el-button>
+        <el-button @click="openDialog">网站爬取</el-button>
       </el-form-item>
     </el-form>
 
@@ -39,48 +39,23 @@
     </el-dialog>-->
 
     <div class="dialog" v-if="isShow">
-      <div class="dialog-bg" @click="closeDialog()"></div>
+      <div class="dialog-bg" @click="closeDialog"></div>
       <div class="dialog-content">
         <div class="dialog-header">
           <h2>选择网站爬取</h2>
-          <button class="close-btn" @click="closeDialog()"></button>
+          <button class="close-btn" @click="closeDialog"></button>
         </div>
         <div class="dialog-body">
           <el-form label-width="130px" size="mini" class="source-list">
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">游研社</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">GameRes游资网</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">GameLook</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">奶牛关</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">触乐</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">游戏时光</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">网易爱玩</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">游戏葡萄</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">机核</el-checkbox>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox class="set-in-checkbox">旅法师营地</el-checkbox>
-            </el-col>
+            <el-checkbox-group v-model="checkList">
+              <el-col :span="12" v-for="(item, index) in checkData" :key="index">
+                <el-checkbox :label="item.id" class="set-in-checkbox">{{item.webName}}</el-checkbox>
+              </el-col>
+            </el-checkbox-group>
           </el-form>
         </div>
         <div class="dialog-footer">
-          <el-button @click="closeDialog()" type="primary">确定</el-button>
+          <el-button @click="submit" type="primary">确定</el-button>
         </div>
       </div>
     </div>
@@ -88,6 +63,7 @@
 </template>
 
 <script>
+import qs from 'qs'
 export default {
   name: 'setting',
   data () {
@@ -97,17 +73,66 @@ export default {
         time:'上午8点',
         time2:'2018-03-29',
         pq: '爬取完毕'
+      },
+      checkData: [],
+      checkList: [],
+      loadData: {
+        reptileTime: '',
+        reptileCount: '',
+        finishCount: ''
       }
     }
   },
   mounted() {
+    this.loading()
   },
   methods: {
+    loading: function () {
+      this.axios.post('api/reptile/getReptileRecord').then(res => {
+        console.log(res)
+        if(res.data.code == '200') {
+          this.loadData = res.data.data;
+        }
+      })
+    },
     openDialog:function(){
-      this.isShow = true;
+      this.axios.post('api/web/list').then(res => {
+        this.loading = false
+        if(res.data.code == '200') {
+          this.checkData = res.data.data;
+          this.isShow = true;
+        }
+      })
+    },
+    submit(){
+      if (this.loadData.reptileCount != this.loadData.finishCount) {
+        this.$message({
+          message: '爬虫程序执行中，请等待',
+          type: 'error'
+        });
+        return false
+      }
+      this.isShow = false;
+      this.axios.post('api/reptile/start', qs.stringify({sourceIds: this.checkList.join(',')})).then(res => {
+        if(res.data.code == '200') {
+          this.checkList = []
+          this.$message({
+            message: res.data.message,
+            type: 'success'
+          });
+          this.loading();
+        } else {
+          this.checkList = []
+          this.$message({
+            message: res.data.message,
+            type: 'success'
+          });
+        }
+      })
     },
     closeDialog(){
       this.isShow = false;
+      this.checkList = [];
     }
   }
 }

@@ -20,14 +20,14 @@
                 <h2>{{items.title}}</h2>
                 <div class="desc">
                   <span class="pv">点赞数/浏览量：{{items.hot}}</span>
-                  <span class="tag">{{items.type}}</span>
+                  <span class="tag" v-for="(type, num) in items.typeList" :key="num">{{type}}</span>
                 </div>
               </div>
             </a>
           </li>
         </ul>
       </div>
-      <div class="overviewList" v-for="(item, index) in tableData1" :key="index">
+      <!-- <div class="overviewList" v-for="(item, index) in tableData1" :key="index">
         <strong><span>{{item.webName}}</span></strong>
         <ul>
           <li v-for="(items, key) in item.articleList.slice(0, 5)" :key="key" :title="'标题：'+items.title+'；标签：'+items.type+'；点赞数/阅读数：'+items.hot">
@@ -89,7 +89,7 @@
             </a>
           </li>
         </ul>
-      </div>
+      </div> -->
     </el-row>
   </section>
 </template>
@@ -527,6 +527,7 @@ export default {
   padding: 0 15px;
   /* height: 202px; */
   border-radius: 5px;
+  min-height: 775px;
 }
 .overviewList li{
   border-bottom: solid 1px #f7f7f7;

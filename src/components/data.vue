@@ -71,7 +71,7 @@
           <h4>变化量排行</h4>
           <p><span>排名</span><span>游戏名称</span><span>总数</span><span>变化百分百</span><span>变化量</span></p>
           <ul class="tj">
-            <li v-for="(item, index) in rightGame.slice(0, 10)" :key="index"><span :class="index == '0' ? 'one' : index == '1' ? 'two' : index == '2' ? 'three' : ''">{{index+1}}</span><span>{{item.gameName}}</span><span>{{item.total}}</span><span>{{item.changePercent}}</span><span :class="item.changeCount > 0 ? 'up' : item.changeCount != 0 ? 'down' : ''">{{Math.abs(item.changeCount)}}</span></li>
+            <li v-for="(item, index) in rightGame.slice(0, 10)" :key="index"><span :class="index == '0' ? 'one' : index == '1' ? 'two' : index == '2' ? 'three' : ''">{{index+1}}</span><span :title="item.gameName">{{item.gameName}}</span><span>{{item.total}}</span><span>{{item.changePercent}}</span><span :class="item.changeCount > 0 ? 'up' : item.changeCount != 0 ? 'down' : ''">{{Math.abs(item.changeCount)}}</span></li>
           </ul>
         </div>
       </div>
@@ -399,23 +399,27 @@ export default {
       })
     },
     articleTypeCount() {
-      // this.loading = true
+      this.loading = true
+      // this.tagCount = {
+      //   tagName: ['趣闻', '推游', '文化', '视频节目', '游戏史', '大事件', '经典回顾', '游戏运营', '射击', '游戏资讯', '游戏产业', '单机游戏', '游戏研究', '游戏攻略', '游戏前瞻', '深度'],
+      //   total: ['55', '43', '88', '90', '12', '36', '85', '75', '39', '20', '81', '76', '34', '58', '82', '100']
+      // }
       this.tagCount = {
-        tagName: ['趣闻', '推游', '文化', '视频节目', '游戏史', '大事件', '经典回顾', '游戏运营', '射击', '游戏资讯', '游戏产业', '单机游戏', '游戏研究', '游戏攻略', '游戏前瞻', '深度'],
-        total: ['55', '43', '88', '90', '12', '36', '85', '75', '39', '20', '81', '76', '34', '58', '82', '100']
+        tagName: [],
+        total: []
       }
       this.drawTag();
-      // this.axios.post('api/statistic/articleTypeCount').then(res => {
-      //   this.loading = false
-      //   if(res.data.code == '200') {
-      //     console.log(res.data.data)
-      //     res.data.data[0].typeList.forEach(item => {
-      //       this.tagCount.tagName.push(item.type);
-      //       this.tagCount.total.push(item.typeCount);
-      //       this.drawTag();
-      //     });
-      //   }
-      // })
+      this.axios.post('api/statistic/articleTypeCount').then(res => {
+        this.loading = false
+        if(res.data.code == '200') {
+          console.log(res.data.data)
+          res.data.data.forEach(item => {
+            this.tagCount.tagName.push(item.type);
+            this.tagCount.total.push(item.typeCount);
+            this.drawTag();
+          });
+        }
+      })
     }
   }
 }
@@ -606,6 +610,7 @@ export default {
   width: calc(20% - 1.5px);
   font-size: 14px;
   color: #666;
+  overflow: hidden;white-space: nowrap;text-overflow: ellipsis;
 }
 .tj span:nth-child(1){
   width: calc(20% - 1.5px);

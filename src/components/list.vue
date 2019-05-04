@@ -40,7 +40,7 @@
                 <img :src="item.imageUrl">
               </div>
               <div class="desc">
-                <h2><a :href="item.url" target="_blank">{{ item.title }}</a> <span class="tag">{{item.type}}</span></h2>
+                <h2><a :href="item.url" target="_blank">{{ item.title }}</a> <span class="tag" :key="num" v-for="(type, num) in item.typeList">{{type}}</span></h2>
                 <p class="intro">
                   <span>{{ item.contentBreviary }}</span>
                   <a @click="details(item)" target="_blank">查看详情</a>
@@ -109,6 +109,33 @@ export default {
       },{
         label: '游研社',
         value: '1'
+      },{
+        label: '奶牛关',
+        value: '2'
+      },{
+        label: '游资网',
+        value: '3'
+      },{
+        label: 'GAMELOOK',
+        value: '4'
+      },{
+        label: '触乐',
+        value: '5'
+      },{
+        label: '游戏时光',
+        value: '6'
+      },{
+        label: '网易爱玩',
+        value: '7'
+      },{
+        label: '游民星空',
+        value: '8'
+      },{
+        label: '机核',
+        value: '9'
+      },{
+        label: '旅法师营地',
+        value: '10'
       }],
       loading: false,
       content: '',
